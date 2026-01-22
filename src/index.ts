@@ -44,6 +44,16 @@ import {
   cmdTagDelete,
   cmdTagGet,
   cmdTagList,
+  cmdTicketAssign,
+  cmdTicketClose,
+  cmdTicketCreate,
+  cmdTicketDelete,
+  cmdTicketGet,
+  cmdTicketReply,
+  cmdTicketSearch,
+  cmdTicketTypeGet,
+  cmdTicketTypeList,
+  cmdTicketUpdate,
   cmdWhoami,
 } from "./commands/index.ts";
 import { CLIError, type GlobalOptions, type OutputFormat } from "./utils/index.ts";
@@ -683,6 +693,179 @@ eventCmd
     withErrorHandler(async (options, cmd: Command) => {
       const globalOpts = getGlobalOptions(cmd);
       await cmdEventList({ ...globalOpts, userId: options.userId });
+    }),
+  );
+
+const ticketCmd = program.command("ticket").description("Manage tickets");
+
+ticketCmd
+  .command("create")
+  .description("Create a new ticket")
+  .option("--type-id <id>", "Ticket type ID")
+  .option("--contact-id <id>", "Contact ID")
+  .option("--title <title>", "Ticket title")
+  .option("--description <desc>", "Ticket description")
+  .option("--company-id <id>", "Company ID")
+  .option("--assignee-id <id>", "Assignee admin ID")
+  .option("--json <json>", "Full ticket data as JSON")
+  .action(
+    withErrorHandler(async (options, cmd: Command) => {
+      const globalOpts = getGlobalOptions(cmd);
+      await cmdTicketCreate({
+        ...globalOpts,
+        ticketTypeId: options.typeId,
+        contactId: options.contactId,
+        title: options.title,
+        description: options.description,
+        companyId: options.companyId,
+        assigneeId: options.assigneeId,
+        json: options.json,
+      });
+    }),
+  );
+
+ticketCmd
+  .command("get")
+  .description("Get ticket details")
+  .argument("<id>", "Ticket ID")
+  .action(
+    withErrorHandler(async (id: string, _options, cmd: Command) => {
+      const globalOpts = getGlobalOptions(cmd);
+      await cmdTicketGet({ ...globalOpts, id });
+    }),
+  );
+
+ticketCmd
+  .command("update")
+  .description("Update a ticket")
+  .argument("<id>", "Ticket ID")
+  .option("--state-id <id>", "Ticket state ID")
+  .option("--assignee-id <id>", "Assignee ID (admin or team)")
+  .option("--admin-id <id>", "Admin ID performing the update")
+  .option("--open", "Set ticket as open")
+  .option("--closed", "Set ticket as closed")
+  .option("--snoozed-until <timestamp>", "Unix timestamp to snooze until")
+  .option("--json <json>", "Update data as JSON")
+  .action(
+    withErrorHandler(async (id: string, options, cmd: Command) => {
+      const globalOpts = getGlobalOptions(cmd);
+      let open: boolean | undefined;
+      if (options.open) open = true;
+      if (options.closed) open = false;
+      await cmdTicketUpdate({
+        ...globalOpts,
+        id,
+        stateId: options.stateId,
+        assigneeId: options.assigneeId,
+        adminId: options.adminId,
+        open,
+        snoozedUntil: options.snoozedUntil,
+        json: options.json,
+      });
+    }),
+  );
+
+ticketCmd
+  .command("delete")
+  .description("Delete a ticket")
+  .argument("<id>", "Ticket ID")
+  .action(
+    withErrorHandler(async (id: string, _options, cmd: Command) => {
+      const globalOpts = getGlobalOptions(cmd);
+      await cmdTicketDelete({ ...globalOpts, id });
+    }),
+  );
+
+ticketCmd
+  .command("search")
+  .description("Search tickets")
+  .option("--state <state>", "Filter by state (open, closed)")
+  .option("--assignee <id>", "Filter by assignee admin ID")
+  .option("--json <json>", "Search query as JSON")
+  .option("-l, --limit <limit>", "Maximum results", "25")
+  .action(
+    withErrorHandler(async (options, cmd: Command) => {
+      const globalOpts = getGlobalOptions(cmd);
+      await cmdTicketSearch({
+        ...globalOpts,
+        state: options.state,
+        assignee: options.assignee,
+        json: options.json,
+        limit: options.limit,
+      });
+    }),
+  );
+
+ticketCmd
+  .command("reply")
+  .description("Reply to a ticket")
+  .argument("<id>", "Ticket ID")
+  .requiredOption("--admin <id>", "Admin ID sending the reply")
+  .requiredOption("--body <body>", "Reply message body")
+  .option("--type <type>", "Message type (comment, note)", "comment")
+  .action(
+    withErrorHandler(async (id: string, options, cmd: Command) => {
+      const globalOpts = getGlobalOptions(cmd);
+      await cmdTicketReply({
+        ...globalOpts,
+        id,
+        adminId: options.admin,
+        body: options.body,
+        messageType: options.type,
+      });
+    }),
+  );
+
+ticketCmd
+  .command("close")
+  .description("Close a ticket")
+  .argument("<id>", "Ticket ID")
+  .requiredOption("--admin <id>", "Admin ID closing the ticket")
+  .action(
+    withErrorHandler(async (id: string, options, cmd: Command) => {
+      const globalOpts = getGlobalOptions(cmd);
+      await cmdTicketClose({ ...globalOpts, id, adminId: options.admin });
+    }),
+  );
+
+ticketCmd
+  .command("assign")
+  .description("Assign ticket to admin/team")
+  .argument("<id>", "Ticket ID")
+  .requiredOption("--admin <id>", "Admin ID performing assignment")
+  .requiredOption("--assignee <id>", "Assignee ID (admin or team)")
+  .action(
+    withErrorHandler(async (id: string, options, cmd: Command) => {
+      const globalOpts = getGlobalOptions(cmd);
+      await cmdTicketAssign({
+        ...globalOpts,
+        id,
+        adminId: options.admin,
+        assigneeId: options.assignee,
+      });
+    }),
+  );
+
+const ticketTypeCmd = program.command("ticket-type").description("Manage ticket types");
+
+ticketTypeCmd
+  .command("list")
+  .description("List all ticket types")
+  .action(
+    withErrorHandler(async (_options, cmd: Command) => {
+      const globalOpts = getGlobalOptions(cmd);
+      await cmdTicketTypeList(globalOpts);
+    }),
+  );
+
+ticketTypeCmd
+  .command("get")
+  .description("Get ticket type details")
+  .argument("<id>", "Ticket type ID")
+  .action(
+    withErrorHandler(async (id: string, _options, cmd: Command) => {
+      const globalOpts = getGlobalOptions(cmd);
+      await cmdTicketTypeGet({ ...globalOpts, id });
     }),
   );
 

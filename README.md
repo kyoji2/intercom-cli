@@ -81,6 +81,16 @@ intercom article get <id>
 
 # Track events
 intercom event track --name "purchase" --user-id "user123"
+
+# Manage tickets
+intercom ticket create --type-id 1234 --contact-id abc123 --title "Issue"
+intercom ticket search --state open
+intercom ticket get <id>
+intercom ticket reply <id> --admin <admin-id> --body "We're on it!"
+intercom ticket close <id> --admin <admin-id>
+
+# List ticket types
+intercom ticket-type list
 ```
 
 ## Commands
@@ -166,6 +176,26 @@ intercom event track --name "purchase" --user-id "user123"
 |---------|-------------|
 | `intercom event track` | Track a custom event |
 | `intercom event list` | List events for a user |
+
+### Tickets
+
+| Command | Description |
+|---------|-------------|
+| `intercom ticket create` | Create a new ticket |
+| `intercom ticket get <id>` | Get ticket details |
+| `intercom ticket update <id>` | Update a ticket |
+| `intercom ticket delete <id>` | Delete a ticket |
+| `intercom ticket search` | Search tickets |
+| `intercom ticket reply <id>` | Reply to a ticket |
+| `intercom ticket close <id>` | Close a ticket |
+| `intercom ticket assign <id>` | Assign ticket to admin/team |
+
+### Ticket Types
+
+| Command | Description |
+|---------|-------------|
+| `intercom ticket-type list` | List all ticket types |
+| `intercom ticket-type get <id>` | Get ticket type details |
 
 ## Global Options
 

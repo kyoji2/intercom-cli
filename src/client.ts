@@ -47,6 +47,8 @@ function createDryRunProxy(client: IntercomClient, logger: Logger): IntercomClie
     "away",
     "tag",
     "untag",
+    "reply",
+    "manage",
   ];
 
   const createNestedProxy = <T extends object>(target: T, path: string[]): T => {
