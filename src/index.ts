@@ -29,6 +29,7 @@ import {
   cmdContext,
   cmdConversationAssign,
   cmdConversationClose,
+  cmdConversationConvert,
   cmdConversationGet,
   cmdConversationList,
   cmdConversationOpen,
@@ -469,6 +470,28 @@ conversationCmd
         id,
         adminId: options.admin,
         until: options.until,
+      });
+    }),
+  );
+
+conversationCmd
+  .command("convert")
+  .description("Convert conversation to a ticket")
+  .argument("<id>", "Conversation ID")
+  .requiredOption("--type-id <id>", "Ticket type ID")
+  .option("--title <title>", "Ticket title")
+  .option("--description <desc>", "Ticket description")
+  .option("--json <json>", "Ticket attributes as JSON")
+  .action(
+    withErrorHandler(async (id: string, options, cmd: Command) => {
+      const globalOpts = getGlobalOptions(cmd);
+      await cmdConversationConvert({
+        ...globalOpts,
+        id,
+        ticketTypeId: options.typeId,
+        title: options.title,
+        description: options.description,
+        json: options.json,
       });
     }),
   );

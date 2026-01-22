@@ -48,6 +48,7 @@ export {
 export type {
   ConversationAssignOptions,
   ConversationCloseOptions,
+  ConversationConvertOptions,
   ConversationGetOptions,
   ConversationListOptions,
   ConversationOpenOptions,
@@ -58,6 +59,7 @@ export type {
 export {
   cmdConversationAssign,
   cmdConversationClose,
+  cmdConversationConvert,
   cmdConversationGet,
   cmdConversationList,
   cmdConversationOpen,

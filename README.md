@@ -133,6 +133,7 @@ intercom ticket-type list
 | `intercom conversation close <id>` | Close conversation |
 | `intercom conversation open <id>` | Reopen conversation |
 | `intercom conversation snooze <id>` | Snooze conversation |
+| `intercom conversation convert <id>` | Convert conversation to ticket |
 
 ### Companies
 

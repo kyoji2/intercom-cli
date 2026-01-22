@@ -46,6 +46,14 @@ export interface ConversationSnoozeOptions extends GlobalOptions {
   until: string;
 }
 
+export interface ConversationConvertOptions extends GlobalOptions {
+  id: string;
+  ticketTypeId: string;
+  title?: string;
+  description?: string;
+  json?: string;
+}
+
 async function requireToken(): Promise<string> {
   const token = await getTokenAsync();
   if (!token) {
@@ -345,6 +353,53 @@ export async function cmdConversationSnooze(options: ConversationSnoozeOptions):
     );
   } catch (error) {
     spinner.fail("Failed to snooze conversation");
+    handleIntercomError(error);
+  }
+}
+
+export async function cmdConversationConvert(options: ConversationConvertOptions): Promise<void> {
+  const token = await requireToken();
+  const spinner = ora("Converting conversation to ticket...").start();
+
+  try {
+    const client = createClient({ token, dryRun: options.dryRun });
+
+    let attributes: Record<string, unknown> | undefined;
+    if (options.json) {
+      attributes = JSON.parse(options.json);
+    } else if (options.title || options.description) {
+      attributes = {};
+      if (options.title) {
+        attributes._default_title_ = options.title;
+      }
+      if (options.description) {
+        attributes._default_description_ = options.description;
+      }
+    }
+
+    const ticket = await client.conversations.convertToTicket({
+      conversation_id: Number.parseInt(options.id, 10),
+      ticket_type_id: options.ticketTypeId,
+      attributes,
+    });
+
+    spinner.succeed("Conversation converted to ticket");
+
+    output(
+      {
+        id: ticket?.id,
+        ticket_id: ticket?.ticket_id,
+        category: ticket?.category,
+        ticket_type: ticket?.ticket_type,
+        ticket_state: ticket?.ticket_state,
+        ticket_attributes: ticket?.ticket_attributes,
+        open: ticket?.open,
+        created_at: ticket?.created_at,
+      },
+      options.format,
+    );
+  } catch (error) {
+    spinner.fail("Failed to convert conversation to ticket");
     handleIntercomError(error);
   }
 }
