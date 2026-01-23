@@ -20,6 +20,7 @@
 - Use 2-space indentation, double quotes, and a 120-character line width (Biome).
 - Keep file and test names in `kebab-case` or `camelCase` as already used (e.g., `client.ts`, `cli.test.ts`).
 - Prefer TypeScript types over `any`; follow existing module boundaries in `src/commands/` and `src/utils/`.
+- Prefer Node.js built-in modules (`node:fs`, `node:path`, etc.) over Bun-specific APIs unless there is a clear need.
 
 ## Testing Guidelines
 - Framework: Bun’s built-in test runner (`bun test`).

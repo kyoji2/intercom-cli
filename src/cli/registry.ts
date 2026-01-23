@@ -1,4 +1,4 @@
-import { Command } from "commander";
+import type { Command } from "commander";
 import {
   cmdAdminGet,
   cmdAdminList,
@@ -113,14 +113,17 @@ function registerCommand(parent: Command, spec: CommandSpec, ctx: RegisterContex
     command.argument(arg.name, arg.description);
   });
 
-  spec.options?.forEach((option) => applyOption(command, option, false));
-  spec.requiredOptions?.forEach((option) => applyOption(command, option, true));
+  spec.options?.forEach((option) => {
+    applyOption(command, option, false);
+  });
+  spec.requiredOptions?.forEach((option) => {
+    applyOption(command, option, true);
+  });
 
   command.action(
     ctx.withErrorHandler(async (...actionArgs: unknown[]) => {
       const cmd = actionArgs.length > 0 ? (actionArgs[actionArgs.length - 1] as Command) : undefined;
-      const options =
-        actionArgs.length > 1 ? (actionArgs[actionArgs.length - 2] as Record<string, unknown>) : {};
+      const options = actionArgs.length > 1 ? (actionArgs[actionArgs.length - 2] as Record<string, unknown>) : {};
       const args = actionArgs.length > 2 ? actionArgs.slice(0, -2) : [];
       const globals = ctx.getGlobalOptions(cmd ?? command);
       await spec.action({ globals, args, options });
@@ -128,9 +131,17 @@ function registerCommand(parent: Command, spec: CommandSpec, ctx: RegisterContex
   );
 }
 
-function registerGroup(program: Command, name: string, description: string, specs: CommandSpec[], ctx: RegisterContext) {
+function registerGroup(
+  program: Command,
+  name: string,
+  description: string,
+  specs: CommandSpec[],
+  ctx: RegisterContext,
+) {
   const group = program.command(name).description(description);
-  specs.forEach((spec) => registerCommand(group, spec, ctx));
+  specs.forEach((spec) => {
+    registerCommand(group, spec, ctx);
+  });
 }
 
 export function registerCommands(program: Command, ctx: RegisterContext): void {

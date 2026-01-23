@@ -1,11 +1,21 @@
 #!/usr/bin/env bun
 
+import { readFileSync } from "node:fs";
 import { Command } from "commander";
 import { registerCommands } from "./cli/registry.ts";
 import { handleIntercomError } from "./client.ts";
 import { CLIError, DEFAULT_CONFIG_DIR, type GlobalOptions, type OutputFormat } from "./utils/index.ts";
 
-const VERSION = "0.1.1";
+function readVersion(): string {
+  try {
+    const packageUrl = new URL("../package.json", import.meta.url);
+    const data = JSON.parse(readFileSync(packageUrl, "utf-8")) as { version?: string };
+    if (typeof data.version === "string" && data.version.trim().length > 0) {
+      return data.version;
+    }
+  } catch {}
+  return "0.0.0";
+}
 
 function getGlobalOptions(cmd: Command): GlobalOptions {
   const opts = cmd.optsWithGlobals();
@@ -66,7 +76,7 @@ const program = new Command();
 program
   .name("intercom")
   .description("AI-native CLI for Intercom - manage customer conversations, contacts, messages, and support")
-  .version(VERSION, "-v, --version")
+  .version(readVersion(), "-v, --version")
   .option("--dry-run", "Log actions instead of making real API requests", false)
   .option("-f, --format <format>", "Output format: toon (default) or json", "toon")
   .option("--config-dir <path>", "Config directory", DEFAULT_CONFIG_DIR);
