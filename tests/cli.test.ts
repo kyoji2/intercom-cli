@@ -1,5 +1,11 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
 import { spawn } from "bun";
+
+const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf-8")) as {
+  version?: string;
+};
+const expectedVersion = packageJson.version ?? "";
 
 describe("CLI Integration", () => {
   const cli = async (args: string) => {
@@ -26,7 +32,7 @@ describe("CLI Integration", () => {
     test("--version shows version", async () => {
       const { stdout } = await cli("--version");
 
-      expect(stdout).toContain("0.1.2");
+      expect(stdout).toContain(expectedVersion);
     });
 
     test("-h shows help", async () => {
@@ -38,7 +44,7 @@ describe("CLI Integration", () => {
     test("-v shows version", async () => {
       const { stdout } = await cli("-v");
 
-      expect(stdout).toContain("0.1.2");
+      expect(stdout).toContain(expectedVersion);
     });
   });
 
