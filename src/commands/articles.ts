@@ -34,8 +34,8 @@ export interface ArticleDeleteOptions extends GlobalOptions {
   id: string;
 }
 
-async function requireToken(): Promise<string> {
-  const token = await getTokenAsync();
+async function requireToken(configDir: string): Promise<string> {
+  const token = await getTokenAsync(configDir);
   if (!token) {
     throw new CLIError("Not logged in", 401, "Run 'intercom login' to authenticate.");
   }
@@ -43,7 +43,7 @@ async function requireToken(): Promise<string> {
 }
 
 export async function cmdArticleList(options: ArticleListOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Listing articles...").start();
 
   try {
@@ -76,7 +76,7 @@ export async function cmdArticleList(options: ArticleListOptions): Promise<void>
 }
 
 export async function cmdArticleGet(options: ArticleGetOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Fetching article...").start();
 
   try {
@@ -109,7 +109,7 @@ export async function cmdArticleGet(options: ArticleGetOptions): Promise<void> {
 }
 
 export async function cmdArticleSearch(options: ArticleSearchOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Searching articles...").start();
 
   try {
@@ -146,7 +146,7 @@ export async function cmdArticleSearch(options: ArticleSearchOptions): Promise<v
 }
 
 export async function cmdArticleCreate(options: ArticleCreateOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Creating article...").start();
 
   try {
@@ -184,7 +184,7 @@ export async function cmdArticleCreate(options: ArticleCreateOptions): Promise<v
 }
 
 export async function cmdArticleUpdate(options: ArticleUpdateOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Updating article...").start();
 
   try {
@@ -212,7 +212,7 @@ export async function cmdArticleUpdate(options: ArticleUpdateOptions): Promise<v
 }
 
 export async function cmdArticleDelete(options: ArticleDeleteOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Deleting article...").start();
 
   try {

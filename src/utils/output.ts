@@ -5,6 +5,7 @@ export type OutputFormat = "json" | "toon";
 export interface GlobalOptions {
   dryRun: boolean;
   format: OutputFormat;
+  configDir: string;
 }
 
 export { encodeToon };

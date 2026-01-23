@@ -205,6 +205,7 @@ All commands support:
 ```bash
 --dry-run              # Log actions without making API calls
 -f, --format <format>  # Output format: toon (default) or json
+--config-dir <path>    # Config directory (default: ~/.config/intercom-cli)
 -v, --version          # Show version
 -h, --help             # Show help
 ```

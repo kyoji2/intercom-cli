@@ -8,8 +8,8 @@ export interface TicketTypeGetOptions extends GlobalOptions {
   id: string;
 }
 
-async function requireToken(): Promise<string> {
-  const token = await getTokenAsync();
+async function requireToken(configDir: string): Promise<string> {
+  const token = await getTokenAsync(configDir);
   if (!token) {
     throw new CLIError("Not logged in", 401, "Run 'intercom login' to authenticate.");
   }
@@ -17,7 +17,7 @@ async function requireToken(): Promise<string> {
 }
 
 export async function cmdTicketTypeList(options: TicketTypeListOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Listing ticket types...").start();
 
   try {
@@ -47,7 +47,7 @@ export async function cmdTicketTypeList(options: TicketTypeListOptions): Promise
 }
 
 export async function cmdTicketTypeGet(options: TicketTypeGetOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Fetching ticket type...").start();
 
   try {

@@ -3,7 +3,7 @@ import { createClient, handleIntercomError } from "../client.ts";
 import { CLIError, type GlobalOptions, getTokenAsync, output } from "../utils/index.ts";
 
 export async function cmdContext(options: GlobalOptions): Promise<void> {
-  const token = await getTokenAsync();
+  const token = await getTokenAsync(options.configDir);
   if (!token) {
     throw new CLIError("Not logged in", 401, "Run 'intercom login' to authenticate.");
   }

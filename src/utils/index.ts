@@ -1,6 +1,7 @@
 export type { Config } from "./config.ts";
 export {
   ConfigError,
+  DEFAULT_CONFIG_DIR,
   deleteConfig,
   getToken,
   getTokenAsync,

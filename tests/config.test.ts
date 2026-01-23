@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { homedir } from "node:os";
+import { existsSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const CONFIG_DIR = join(homedir(), ".config", "intercom-cli-test");
+const CONFIG_DIR = join(tmpdir(), "intercom-cli-test");
 
 const originalEnv = { ...process.env };
 
@@ -28,21 +28,21 @@ describe("Config", () => {
   describe("getToken", () => {
     test("returns null when no config and no env", async () => {
       const { getTokenAsync } = await import("../src/utils/config.ts");
-      const token = await getTokenAsync();
+      const token = await getTokenAsync(CONFIG_DIR);
       expect(token).toBeNull();
     });
 
     test("returns token from env if set", async () => {
       process.env.INTERCOM_ACCESS_TOKEN = "test-token-from-env";
       const { getTokenAsync } = await import("../src/utils/config.ts");
-      const token = await getTokenAsync();
+      const token = await getTokenAsync(CONFIG_DIR);
       expect(token).toBe("test-token-from-env");
     });
 
     test("returns null for empty env token", async () => {
       process.env.INTERCOM_ACCESS_TOKEN = "   ";
       const { getTokenAsync } = await import("../src/utils/config.ts");
-      const token = await getTokenAsync();
+      const token = await getTokenAsync(CONFIG_DIR);
       expect(token).toBeNull();
     });
   });
@@ -50,23 +50,17 @@ describe("Config", () => {
   describe("loadConfig", () => {
     test("returns null when config file does not exist", async () => {
       const { loadConfig } = await import("../src/utils/config.ts");
-      const config = await loadConfig();
+      const config = await loadConfig(CONFIG_DIR);
       expect(config).toBeNull();
     });
   });
 
   describe("saveConfig and loadConfig", () => {
     test("saves and loads config correctly", async () => {
-      mkdirSync(CONFIG_DIR, { recursive: true });
-      const testConfigFile = join(CONFIG_DIR, "config.json");
-      writeFileSync(testConfigFile, JSON.stringify({ token: "saved-token" }));
-
-      const file = Bun.file(testConfigFile);
-      expect(await file.exists()).toBe(true);
-
-      const text = await file.text();
-      const data = JSON.parse(text);
-      expect(data.token).toBe("saved-token");
+      const { loadConfig, saveConfig } = await import("../src/utils/config.ts");
+      await saveConfig(CONFIG_DIR, { token: "saved-token" });
+      const config = await loadConfig(CONFIG_DIR);
+      expect(config).toEqual({ token: "saved-token" });
     });
   });
 

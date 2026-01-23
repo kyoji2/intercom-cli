@@ -55,8 +55,8 @@ export interface ContactAttachCompanyOptions extends GlobalOptions {
   companyId: string;
 }
 
-async function requireToken(): Promise<string> {
-  const token = await getTokenAsync();
+async function requireToken(configDir: string): Promise<string> {
+  const token = await getTokenAsync(configDir);
   if (!token) {
     throw new CLIError("Not logged in", 401, "Run 'intercom login' to authenticate.");
   }
@@ -64,7 +64,7 @@ async function requireToken(): Promise<string> {
 }
 
 export async function cmdContactCreate(options: ContactCreateOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Creating contact...").start();
 
   try {
@@ -105,7 +105,7 @@ export async function cmdContactCreate(options: ContactCreateOptions): Promise<v
 }
 
 export async function cmdContactGet(options: ContactGetOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Fetching contact...").start();
 
   try {
@@ -141,7 +141,7 @@ export async function cmdContactGet(options: ContactGetOptions): Promise<void> {
 }
 
 export async function cmdContactUpdate(options: ContactUpdateOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Updating contact...").start();
 
   try {
@@ -179,7 +179,7 @@ export async function cmdContactUpdate(options: ContactUpdateOptions): Promise<v
 }
 
 export async function cmdContactDelete(options: ContactDeleteOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Deleting contact...").start();
 
   try {
@@ -196,7 +196,7 @@ export async function cmdContactDelete(options: ContactDeleteOptions): Promise<v
 }
 
 export async function cmdContactSearch(options: ContactSearchOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Searching contacts...").start();
 
   try {
@@ -246,7 +246,7 @@ export async function cmdContactSearch(options: ContactSearchOptions): Promise<v
 }
 
 export async function cmdContactList(options: ContactListOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Listing contacts...").start();
 
   try {
@@ -277,7 +277,7 @@ export async function cmdContactList(options: ContactListOptions): Promise<void>
 }
 
 export async function cmdContactNote(options: ContactNoteOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Adding note...").start();
 
   try {
@@ -305,7 +305,7 @@ export async function cmdContactNote(options: ContactNoteOptions): Promise<void>
 }
 
 export async function cmdContactNotes(options: ContactNotesListOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Fetching notes...").start();
 
   try {
@@ -332,7 +332,7 @@ export async function cmdContactNotes(options: ContactNotesListOptions): Promise
 }
 
 export async function cmdContactTag(options: ContactTagOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Tagging contact...").start();
 
   try {
@@ -358,7 +358,7 @@ export async function cmdContactTag(options: ContactTagOptions): Promise<void> {
 }
 
 export async function cmdContactUntag(options: ContactTagOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Removing tag...").start();
 
   try {
@@ -384,7 +384,7 @@ export async function cmdContactUntag(options: ContactTagOptions): Promise<void>
 }
 
 export async function cmdContactAttachCompany(options: ContactAttachCompanyOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Attaching company...").start();
 
   try {

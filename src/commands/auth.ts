@@ -43,7 +43,7 @@ export async function cmdLogin(options: LoginOptions): Promise<void> {
       throw new CLIError("Could not verify token", 401, "The token may be invalid or expired.");
     }
 
-    await saveConfig({ token });
+    await saveConfig(options.configDir, { token });
     spinner.succeed("Logged in successfully");
 
     output(
@@ -65,12 +65,12 @@ export async function cmdLogin(options: LoginOptions): Promise<void> {
 }
 
 export async function cmdLogout(options: GlobalOptions): Promise<void> {
-  await deleteConfig();
+  await deleteConfig(options.configDir);
   output({ status: "success", message: "Logged out successfully" }, options.format);
 }
 
 export async function cmdWhoami(options: GlobalOptions): Promise<void> {
-  const token = await getTokenAsync();
+  const token = await getTokenAsync(options.configDir);
   if (!token) {
     throw new CLIError("Not logged in", 401, "Run 'intercom login' to authenticate.");
   }

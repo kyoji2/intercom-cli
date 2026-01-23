@@ -55,8 +55,8 @@ export interface TicketAssignOptions extends GlobalOptions {
   assigneeId: string;
 }
 
-async function requireToken(): Promise<string> {
-  const token = await getTokenAsync();
+async function requireToken(configDir: string): Promise<string> {
+  const token = await getTokenAsync(configDir);
   if (!token) {
     throw new CLIError("Not logged in", 401, "Run 'intercom login' to authenticate.");
   }
@@ -64,7 +64,7 @@ async function requireToken(): Promise<string> {
 }
 
 export async function cmdTicketGet(options: TicketGetOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Fetching ticket...").start();
 
   try {
@@ -101,7 +101,7 @@ export async function cmdTicketGet(options: TicketGetOptions): Promise<void> {
 }
 
 export async function cmdTicketCreate(options: TicketCreateOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Creating ticket...").start();
 
   try {
@@ -165,7 +165,7 @@ export async function cmdTicketCreate(options: TicketCreateOptions): Promise<voi
 }
 
 export async function cmdTicketUpdate(options: TicketUpdateOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Updating ticket...").start();
 
   try {
@@ -217,7 +217,7 @@ export async function cmdTicketUpdate(options: TicketUpdateOptions): Promise<voi
 }
 
 export async function cmdTicketDelete(options: TicketDeleteOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Deleting ticket...").start();
 
   try {
@@ -234,7 +234,7 @@ export async function cmdTicketDelete(options: TicketDeleteOptions): Promise<voi
 }
 
 export async function cmdTicketSearch(options: TicketSearchOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Searching tickets...").start();
 
   try {
@@ -300,7 +300,7 @@ export async function cmdTicketSearch(options: TicketSearchOptions): Promise<voi
 }
 
 export async function cmdTicketReply(options: TicketReplyOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Sending reply...").start();
 
   try {
@@ -338,7 +338,7 @@ export async function cmdTicketReply(options: TicketReplyOptions): Promise<void>
 }
 
 export async function cmdTicketClose(options: TicketCloseOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Closing ticket...").start();
 
   try {
@@ -368,7 +368,7 @@ export async function cmdTicketClose(options: TicketCloseOptions): Promise<void>
 }
 
 export async function cmdTicketAssign(options: TicketAssignOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Assigning ticket...").start();
 
   try {

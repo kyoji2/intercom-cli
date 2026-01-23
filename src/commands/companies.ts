@@ -24,8 +24,8 @@ export interface CompanyUpdateOptions extends GlobalOptions {
   json: string;
 }
 
-async function requireToken(): Promise<string> {
-  const token = await getTokenAsync();
+async function requireToken(configDir: string): Promise<string> {
+  const token = await getTokenAsync(configDir);
   if (!token) {
     throw new CLIError("Not logged in", 401, "Run 'intercom login' to authenticate.");
   }
@@ -33,7 +33,7 @@ async function requireToken(): Promise<string> {
 }
 
 export async function cmdCompanyCreate(options: CompanyCreateOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Creating company...").start();
 
   try {
@@ -78,7 +78,7 @@ export async function cmdCompanyCreate(options: CompanyCreateOptions): Promise<v
 }
 
 export async function cmdCompanyGet(options: CompanyGetOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Fetching company...").start();
 
   try {
@@ -114,7 +114,7 @@ export async function cmdCompanyGet(options: CompanyGetOptions): Promise<void> {
 }
 
 export async function cmdCompanyList(options: CompanyListOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Listing companies...").start();
 
   try {
@@ -147,7 +147,7 @@ export async function cmdCompanyList(options: CompanyListOptions): Promise<void>
 }
 
 export async function cmdCompanyUpdate(options: CompanyUpdateOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Updating company...").start();
 
   try {

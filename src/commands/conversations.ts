@@ -54,8 +54,8 @@ export interface ConversationConvertOptions extends GlobalOptions {
   json?: string;
 }
 
-async function requireToken(): Promise<string> {
-  const token = await getTokenAsync();
+async function requireToken(configDir: string): Promise<string> {
+  const token = await getTokenAsync(configDir);
   if (!token) {
     throw new CLIError("Not logged in", 401, "Run 'intercom login' to authenticate.");
   }
@@ -63,7 +63,7 @@ async function requireToken(): Promise<string> {
 }
 
 export async function cmdConversationList(options: ConversationListOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Listing conversations...").start();
 
   try {
@@ -99,7 +99,7 @@ export async function cmdConversationList(options: ConversationListOptions): Pro
 }
 
 export async function cmdConversationGet(options: ConversationGetOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Fetching conversation...").start();
 
   try {
@@ -140,7 +140,7 @@ export async function cmdConversationGet(options: ConversationGetOptions): Promi
 }
 
 export async function cmdConversationSearch(options: ConversationSearchOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Searching conversations...").start();
 
   try {
@@ -200,7 +200,7 @@ export async function cmdConversationSearch(options: ConversationSearchOptions):
 }
 
 export async function cmdConversationReply(options: ConversationReplyOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Sending reply...").start();
 
   try {
@@ -233,7 +233,7 @@ export async function cmdConversationReply(options: ConversationReplyOptions): P
 }
 
 export async function cmdConversationAssign(options: ConversationAssignOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Assigning conversation...").start();
 
   try {
@@ -265,7 +265,7 @@ export async function cmdConversationAssign(options: ConversationAssignOptions):
 }
 
 export async function cmdConversationClose(options: ConversationCloseOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Closing conversation...").start();
 
   try {
@@ -296,7 +296,7 @@ export async function cmdConversationClose(options: ConversationCloseOptions): P
 }
 
 export async function cmdConversationOpen(options: ConversationOpenOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Opening conversation...").start();
 
   try {
@@ -326,7 +326,7 @@ export async function cmdConversationOpen(options: ConversationOpenOptions): Pro
 }
 
 export async function cmdConversationSnooze(options: ConversationSnoozeOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Snoozing conversation...").start();
 
   try {
@@ -358,7 +358,7 @@ export async function cmdConversationSnooze(options: ConversationSnoozeOptions):
 }
 
 export async function cmdConversationConvert(options: ConversationConvertOptions): Promise<void> {
-  const token = await requireToken();
+  const token = await requireToken(options.configDir);
   const spinner = ora("Converting conversation to ticket...").start();
 
   try {

@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
+import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -13,8 +14,11 @@ export class ConfigError extends Error {
   }
 }
 
-const CONFIG_DIR = join(homedir(), ".config", "intercom-cli");
-const CONFIG_FILE = join(CONFIG_DIR, "config.json");
+export const DEFAULT_CONFIG_DIR = join(homedir(), ".config", "intercom-cli");
+
+function getConfigFile(configDir: string): string {
+  return join(configDir, "config.json");
+}
 
 function isValidConfig(data: unknown): data is Config {
   if (typeof data !== "object" || data === null) return false;
@@ -22,13 +26,16 @@ function isValidConfig(data: unknown): data is Config {
   return typeof obj.token === "string" && obj.token.length > 0;
 }
 
-export async function loadConfig(): Promise<Config | null> {
+export async function loadConfig(configDir: string): Promise<Config | null> {
   try {
-    const file = Bun.file(CONFIG_FILE);
-    const exists = await file.exists();
-    if (!exists) return null;
+    const configFile = getConfigFile(configDir);
+    try {
+      await access(configFile);
+    } catch {
+      return null;
+    }
 
-    const text = await file.text();
+    const text = await readFile(configFile, "utf-8");
     if (!text.trim()) return null;
 
     let data: unknown;
@@ -36,13 +43,13 @@ export async function loadConfig(): Promise<Config | null> {
       data = JSON.parse(text);
     } catch {
       throw new ConfigError(
-        `Invalid JSON in config file: ${CONFIG_FILE}. Delete the file and run 'intercom login' again.`,
+        `Invalid JSON in config file: ${configFile}. Delete the file and run 'intercom login' again.`,
       );
     }
 
     if (!isValidConfig(data)) {
       throw new ConfigError(
-        `Invalid config format in ${CONFIG_FILE}. Expected { "token": "..." }. Delete the file and run 'intercom login' again.`,
+        `Invalid config format in ${configFile}. Expected { "token": "..." }. Delete the file and run 'intercom login' again.`,
       );
     }
 
@@ -53,11 +60,12 @@ export async function loadConfig(): Promise<Config | null> {
   }
 }
 
-export function loadConfigSync(): Config | null {
+export function loadConfigSync(configDir: string): Config | null {
   try {
-    if (!existsSync(CONFIG_FILE)) return null;
+    const configFile = getConfigFile(configDir);
+    if (!existsSync(configFile)) return null;
 
-    const text = readFileSync(CONFIG_FILE, "utf-8");
+    const text = readFileSync(configFile, "utf-8");
     if (!text.trim()) return null;
 
     const data = JSON.parse(text);
@@ -69,25 +77,24 @@ export function loadConfigSync(): Config | null {
   }
 }
 
-export async function saveConfig(config: Config): Promise<void> {
+export async function saveConfig(configDir: string, config: Config): Promise<void> {
   if (!config.token || typeof config.token !== "string") {
     throw new ConfigError("Invalid token: token must be a non-empty string");
   }
 
-  await Bun.$`mkdir -p ${CONFIG_DIR}`;
-  await Bun.write(CONFIG_FILE, JSON.stringify(config, null, 2));
+  const configFile = getConfigFile(configDir);
+  await mkdir(configDir, { recursive: true });
+  await writeFile(configFile, JSON.stringify(config, null, 2), "utf-8");
 }
 
-export async function deleteConfig(): Promise<void> {
+export async function deleteConfig(configDir: string): Promise<void> {
   try {
-    const file = Bun.file(CONFIG_FILE);
-    if (await file.exists()) {
-      await Bun.$`rm -f ${CONFIG_FILE}`;
-    }
+    const configFile = getConfigFile(configDir);
+    await rm(configFile, { force: true });
   } catch {}
 }
 
-export function getToken(): string | null {
+export function getToken(configDir: string): string | null {
   const envToken = process.env.INTERCOM_ACCESS_TOKEN;
   if (envToken) {
     if (envToken.trim().length === 0) {
@@ -96,11 +103,11 @@ export function getToken(): string | null {
     return envToken.trim();
   }
 
-  const config = loadConfigSync();
+  const config = loadConfigSync(configDir);
   return config?.token || null;
 }
 
-export async function getTokenAsync(): Promise<string | null> {
+export async function getTokenAsync(configDir: string): Promise<string | null> {
   const envToken = process.env.INTERCOM_ACCESS_TOKEN;
   if (envToken) {
     if (envToken.trim().length === 0) {
@@ -109,6 +116,6 @@ export async function getTokenAsync(): Promise<string | null> {
     return envToken.trim();
   }
 
-  const config = await loadConfig();
+  const config = await loadConfig(configDir);
   return config?.token || null;
 }
