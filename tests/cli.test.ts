@@ -26,7 +26,7 @@ describe("CLI Integration", () => {
     test("--version shows version", async () => {
       const { stdout } = await cli("--version");
 
-      expect(stdout).toContain("0.1.0");
+      expect(stdout).toContain("0.1.1");
     });
 
     test("-h shows help", async () => {
@@ -38,7 +38,7 @@ describe("CLI Integration", () => {
     test("-v shows version", async () => {
       const { stdout } = await cli("-v");
 
-      expect(stdout).toContain("0.1.0");
+      expect(stdout).toContain("0.1.1");
     });
   });
 

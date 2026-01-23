@@ -1,6 +1,6 @@
 {
   "name": "@kyoji2/intercom-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "AI-native CLI for Intercom - manage customer conversations, contacts, messages, and support",
   "author": "kyoji2",
   "repository": {

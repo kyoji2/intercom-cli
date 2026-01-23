@@ -5,7 +5,7 @@ import { registerCommands } from "./cli/registry.ts";
 import { handleIntercomError } from "./client.ts";
 import { CLIError, DEFAULT_CONFIG_DIR, type GlobalOptions, type OutputFormat } from "./utils/index.ts";
 
-const VERSION = "0.1.0";
+const VERSION = "0.1.1";
 
 function getGlobalOptions(cmd: Command): GlobalOptions {
   const opts = cmd.optsWithGlobals();
