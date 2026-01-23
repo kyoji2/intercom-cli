@@ -15,12 +15,21 @@
 - `bun run format`: auto-format code with Biome.
 - `bun run typecheck`: run `tsc --noEmit`.
 - `bun run build`: bundle the CLI to `dist/` and make it executable.
+- `bun run release:patch|minor|major`: bump version, run lint/tests/build, tag, and push.
+
+## Tooling Preferences
+- Use Bun for local tooling (`bun run`, `bun test`, `bun run build`) instead of npm/yarn.
+- Prefer Node.js built-in modules (`node:fs`, `node:path`, etc.) over Bun-specific runtime APIs unless there is a clear need.
+
+## Key Patterns
+- Keep `AGENTS.md` updated whenever code changes affect tooling, runtime APIs, workflows, or conventions.
+- Always run lint and tests to verify code changes.
+- Use Conventional Commits style for git commit messages (e.g., `feat:`, `fix:`, `chore:`).
 
 ## Coding Style & Naming Conventions
 - Use 2-space indentation, double quotes, and a 120-character line width (Biome).
 - Keep file and test names in `kebab-case` or `camelCase` as already used (e.g., `client.ts`, `cli.test.ts`).
 - Prefer TypeScript types over `any`; follow existing module boundaries in `src/commands/` and `src/utils/`.
-- Prefer Node.js built-in modules (`node:fs`, `node:path`, etc.) over Bun-specific APIs unless there is a clear need.
 
 ## Testing Guidelines
 - Framework: Bun’s built-in test runner (`bun test`).
