@@ -71,6 +71,13 @@ describe("CLI Integration", () => {
       expect(stdout).toContain("close");
     });
 
+    test("conversation reply --help shows --type and --json", async () => {
+      const { stdout } = await cli("conversation reply --help");
+
+      expect(stdout).toContain("--type");
+      expect(stdout).toContain("--json");
+    });
+
     test("company --help shows subcommands", async () => {
       const { stdout } = await cli("company --help");
 
@@ -111,6 +118,13 @@ describe("CLI Integration", () => {
 
       expect(stdout).toContain("list");
       expect(stdout).toContain("get");
+    });
+
+    test("ticket reply --help shows --type and --json", async () => {
+      const { stdout } = await cli("ticket reply --help");
+
+      expect(stdout).toContain("--type");
+      expect(stdout).toContain("--json");
     });
   });
 

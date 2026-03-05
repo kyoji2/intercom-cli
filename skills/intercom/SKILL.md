@@ -6,7 +6,7 @@ compatibility: Requires Bun runtime (v1.0+) and Intercom account with API token
 metadata:
   author: kyoji2
   homepage: https://github.com/kyoji2/intercom-cli
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Intercom CLI
@@ -113,6 +113,8 @@ intercom conversation search --assignee <admin-id>
 intercom conversation search --json '{"query":{"field":"state","operator":"=","value":"open"}}'
 
 intercom conversation reply <id> --admin <admin-id> --body "Message"
+intercom conversation reply <id> --admin <admin-id> --body "Internal note" --type note
+intercom conversation reply <id> --admin <admin-id> --body "Internal note" --json '{"message_type":"note"}'
 intercom conversation assign <id> --admin <admin-id> --assignee <assignee-id>
 intercom conversation close <id> --admin <admin-id>
 intercom conversation open <id> --admin <admin-id>
@@ -122,6 +124,8 @@ intercom conversation snooze <id> --admin <admin-id> --until <unix-timestamp>
 intercom conversation convert <id> --type-id <ticket-type-id>
 intercom conversation convert <id> --type-id <ticket-type-id> --title "Bug Report" --description "Details"
 ```
+
+For `conversation reply`, message type precedence is `--type` > `--json.message_type` > `comment`.
 
 ## Tickets
 
@@ -150,6 +154,7 @@ intercom ticket update <id> --json '{"ticket_attributes":{"_default_title_":"Upd
 # Reply (comment visible to customer, note internal only)
 intercom ticket reply <id> --admin <admin-id> --body "We're investigating"
 intercom ticket reply <id> --admin <admin-id> --body "Internal note" --type note
+intercom ticket reply <id> --admin <admin-id> --body "Internal note" --json '{"message_type":"note"}'
 
 # Workflow actions
 intercom ticket close <id> --admin <admin-id>
@@ -158,6 +163,8 @@ intercom ticket assign <id> --admin <admin-id> --assignee <assignee-id>
 # Delete
 intercom ticket delete <id>
 ```
+
+For `ticket reply`, message type precedence is `--type` > `--json.message_type` > `comment`.
 
 ## Companies
 

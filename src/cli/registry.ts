@@ -430,13 +430,17 @@ export function registerCommands(program: Command, ctx: RegisterContext): void {
           { flags: "--admin <id>", description: "Admin ID sending the reply" },
           { flags: "--body <body>", description: "Reply message body" },
         ],
-        options: [{ flags: "--json <json>", description: "Additional reply data as JSON" }],
+        options: [
+          { flags: "--type <type>", description: "Message type (comment, note)" },
+          { flags: "--json <json>", description: "Additional reply data as JSON" },
+        ],
         action: async ({ globals, args, options }) => {
           await cmdConversationReply({
             ...globals,
             id: String(args[0]),
             adminId: options.admin as string,
             body: options.body as string,
+            messageType: options.type as string | undefined,
             json: options.json as string | undefined,
           });
         },
@@ -845,7 +849,10 @@ export function registerCommands(program: Command, ctx: RegisterContext): void {
           { flags: "--admin <id>", description: "Admin ID sending the reply" },
           { flags: "--body <body>", description: "Reply message body" },
         ],
-        options: [{ flags: "--type <type>", description: "Message type (comment, note)", defaultValue: "comment" }],
+        options: [
+          { flags: "--type <type>", description: "Message type (comment, note)" },
+          { flags: "--json <json>", description: "Additional reply data as JSON" },
+        ],
         action: async ({ globals, args, options }) => {
           await cmdTicketReply({
             ...globals,
@@ -853,6 +860,7 @@ export function registerCommands(program: Command, ctx: RegisterContext): void {
             adminId: options.admin as string,
             body: options.body as string,
             messageType: options.type as string | undefined,
+            json: options.json as string | undefined,
           });
         },
       },

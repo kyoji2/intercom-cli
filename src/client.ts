@@ -109,6 +109,14 @@ function getDryRunResponse(method: string): unknown {
 }
 
 export function handleIntercomError(error: unknown): never {
+  if (error instanceof SyntaxError) {
+    throw new CLIError(
+      "Invalid JSON input provided to command.",
+      400,
+      "Ensure your JSON data is valid and properly escaped for the shell.",
+    );
+  }
+
   if (error instanceof IntercomError) {
     let hint: string | undefined;
     if (error.statusCode === 401) {

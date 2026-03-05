@@ -1,6 +1,7 @@
 import ora from "ora";
 import { createClient, handleIntercomError } from "../client.ts";
 import { CLIError, type GlobalOptions, getTokenAsync, output } from "../utils/index.ts";
+import { buildAdminReplyPayload } from "./replyPayload.ts";
 
 export interface TicketGetOptions extends GlobalOptions {
   id: string;
@@ -42,6 +43,7 @@ export interface TicketReplyOptions extends GlobalOptions {
   adminId: string;
   body: string;
   messageType?: string;
+  json?: string;
 }
 
 export interface TicketCloseOptions extends GlobalOptions {
@@ -306,16 +308,14 @@ export async function cmdTicketReply(options: TicketReplyOptions): Promise<void>
   try {
     const client = createClient({ token, dryRun: options.dryRun });
 
-    const messageType = options.messageType === "note" ? "note" : "comment";
-
     const result = await client.tickets.reply({
       ticket_id: options.id,
-      body: {
-        message_type: messageType,
-        type: "admin",
-        admin_id: options.adminId,
+      body: buildAdminReplyPayload({
+        adminId: options.adminId,
         body: options.body,
-      },
+        messageType: options.messageType,
+        json: options.json,
+      }),
     });
 
     spinner.succeed("Reply sent");
