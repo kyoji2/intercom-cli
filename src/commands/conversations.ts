@@ -1,6 +1,7 @@
 import ora from "ora";
 import { createClient, handleIntercomError } from "../client.ts";
 import { CLIError, type GlobalOptions, getTokenAsync, output } from "../utils/index.ts";
+import { buildAdminReplyPayload } from "./replyPayload.ts";
 
 export interface ConversationListOptions extends GlobalOptions {
   limit?: string;
@@ -21,6 +22,7 @@ export interface ConversationReplyOptions extends GlobalOptions {
   id: string;
   adminId: string;
   body: string;
+  messageType?: string;
   json?: string;
 }
 
@@ -208,12 +210,12 @@ export async function cmdConversationReply(options: ConversationReplyOptions): P
 
     const result = await client.conversations.reply({
       conversation_id: options.id,
-      body: {
-        message_type: "comment",
-        type: "admin",
-        admin_id: options.adminId,
+      body: buildAdminReplyPayload({
+        adminId: options.adminId,
         body: options.body,
-      },
+        messageType: options.messageType,
+        json: options.json,
+      }),
     });
 
     spinner.succeed("Reply sent");

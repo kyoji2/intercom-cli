@@ -84,6 +84,20 @@ describe("handleIntercomError", () => {
       expect((e as CLIError).statusCode).toBe(500);
     }
   });
+
+  test("converts SyntaxError to CLIError with 400 status", () => {
+    const error = new SyntaxError("Unexpected end of JSON input");
+
+    expect(() => handleIntercomError(error)).toThrow(CLIError);
+
+    try {
+      handleIntercomError(error);
+    } catch (e) {
+      expect(e).toBeInstanceOf(CLIError);
+      expect((e as CLIError).statusCode).toBe(400);
+      expect((e as CLIError).message).toBe("Invalid JSON input provided to command.");
+    }
+  });
 });
 
 describe("CLIError", () => {

@@ -222,11 +222,16 @@ Reply to a conversation.
 |--------|-------------|----------|
 | `--admin <id>` | Admin ID sending reply | Yes |
 | `--body <body>` | Reply message | Yes |
+| `--type <type>` | Message type (`comment`, `note`) | No |
 | `--json <json>` | Additional data as JSON | No |
 
 ```bash
 intercom conversation reply 12345 --admin 67890 --body "Thank you for reaching out!"
+intercom conversation reply 12345 --admin 67890 --body "Internal note" --type note
+intercom conversation reply 12345 --admin 67890 --body "Internal note" --json '{"message_type":"note"}'
 ```
+
+Message type precedence: `--type` > `--json.message_type` > `comment`.
 
 ### `intercom conversation assign <id>`
 
@@ -277,6 +282,29 @@ Snooze a conversation.
 ```bash
 intercom conversation snooze 12345 --admin 67890 --until 1735689600
 ```
+
+---
+
+## Ticket Commands
+
+### `intercom ticket reply <id>`
+
+Reply to a ticket.
+
+| Option | Description | Required |
+|--------|-------------|----------|
+| `--admin <id>` | Admin ID sending reply | Yes |
+| `--body <body>` | Reply message | Yes |
+| `--type <type>` | Message type (`comment`, `note`) | No |
+| `--json <json>` | Additional data as JSON | No |
+
+```bash
+intercom ticket reply 12345 --admin 67890 --body "We're investigating"
+intercom ticket reply 12345 --admin 67890 --body "Internal note" --type note
+intercom ticket reply 12345 --admin 67890 --body "Internal note" --json '{"message_type":"note"}'
+```
+
+Message type precedence: `--type` > `--json.message_type` > `comment`.
 
 ---
 

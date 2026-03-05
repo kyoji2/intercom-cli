@@ -35,6 +35,7 @@ intercom conversation list
 intercom conversation search --state open
 intercom conversation get <id>
 intercom conversation reply <id> --admin <admin-id> --body "Message"
+intercom conversation reply <id> --admin <admin-id> --body "Internal note" --type note
 intercom conversation close <id> --admin <admin-id>
 intercom conversation assign <id> --admin <admin-id> --assignee <id>
 

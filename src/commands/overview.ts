@@ -118,7 +118,9 @@ export function cmdSchema(): void {
       create_contact: 'intercom contact create --email "user@example.com" --name "John Doe"',
       search_contacts: 'intercom contact search --email "user@example.com"',
       list_conversations: "intercom conversation list --limit 10",
-      reply_conversation: 'intercom conversation reply <id> --admin <admin-id> --body "Thank you!"',
+      reply_conversation: 'intercom conversation reply <id> --admin <admin-id> --body "Internal note" --type note',
+      reply_ticket:
+        'intercom ticket reply <id> --admin <admin-id> --body "Internal note" --json \'{"message_type":"note"}\'',
       create_tag: 'intercom tag create "VIP Customer"',
       search_articles: 'intercom article search "getting started"',
     },
