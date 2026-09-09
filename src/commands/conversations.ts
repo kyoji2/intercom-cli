@@ -24,6 +24,7 @@ export interface ConversationReplyOptions extends GlobalOptions {
   adminId: string;
   body?: string;
   bodyFile?: string;
+  bodyFormat?: string;
   messageType?: string;
   json?: string;
 }
@@ -204,7 +205,11 @@ export async function cmdConversationSearch(options: ConversationSearchOptions):
 }
 
 export async function cmdConversationReply(options: ConversationReplyOptions): Promise<void> {
-  const body = await resolveReplyBody({ body: options.body, bodyFile: options.bodyFile });
+  const body = await resolveReplyBody({
+    body: options.body,
+    bodyFile: options.bodyFile,
+    bodyFormat: options.bodyFormat,
+  });
   const token = await requireToken(options.configDir);
   const spinner = ora("Sending reply...").start();
 

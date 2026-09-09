@@ -18,6 +18,36 @@ afterEach(async () => {
 });
 
 describe("resolveReplyBody", () => {
+  test("renders inline Markdown as deterministic HTML when requested", async () => {
+    await expect(
+      resolveReplyBody({ body: "# Status\n\nAll *systems* are `go`.", bodyFormat: "markdown" }),
+    ).resolves.toBe("<h1>Status</h1>\n<p>All <em>systems</em> are <code>go</code>.</p>\n");
+  });
+
+  test("preserves Markdown soft line breaks inside paragraphs", async () => {
+    await expect(resolveReplyBody({ body: "First line\nsecond line", bodyFormat: "markdown" })).resolves.toBe(
+      "<p>First line\nsecond line</p>\n",
+    );
+  });
+
+  test("renders a Markdown file and escapes source HTML", async () => {
+    const directory = await createTemporaryDirectory();
+    const path = join(directory, "reply.md");
+    await writeFile(
+      path,
+      "- [Guide](https://example.com)\n- `<safe>`\n\n<div>untrusted</div>\n\n```ts\nconst 名称 = '🎉';\n```",
+      "utf8",
+    );
+
+    await expect(resolveReplyBody({ bodyFile: path, bodyFormat: "markdown" })).resolves.toBe(
+      '<ul>\n<li><a href="https://example.com">Guide</a></li>\n<li><code>&lt;safe&gt;</code></li>\n</ul>\n<p>&lt;div&gt;untrusted&lt;/div&gt;</p>\n<pre><code class="language-ts">const 名称 = \'🎉\';\n</code></pre>\n',
+    );
+  });
+
+  test("rejects unsupported body formats", async () => {
+    await expect(resolveReplyBody({ body: "reply", bodyFormat: "html" })).rejects.toThrow(CLIError);
+  });
+
   test("returns --body unchanged", async () => {
     await expect(resolveReplyBody({ body: "inline reply" })).resolves.toBe("inline reply");
   });

@@ -64,6 +64,7 @@ intercom conversation search --state open
 intercom conversation get <id>
 intercom conversation reply <id> --admin <admin-id> --body "Internal triage note" --type note
 intercom conversation reply <id> --admin <admin-id> --body-file ./reply.html --type note
+intercom conversation reply <id> --admin <admin-id> --body-file ./reply.md --body-format markdown
 intercom conversation close <id> --admin <admin-id>
 
 # Manage companies
@@ -89,6 +90,7 @@ intercom ticket search --state open
 intercom ticket get <id>
 intercom ticket reply <id> --admin <admin-id> --body "We're on it!" --type comment
 intercom ticket reply <id> --admin <admin-id> --body-file ./reply.txt --type comment
+intercom ticket reply <id> --admin <admin-id> --body "# Update" --body-format markdown
 intercom ticket reply <id> --admin <admin-id> --body "Internal note" --json '{"message_type":"note"}'
 intercom ticket close <id> --admin <admin-id>
 
@@ -138,7 +140,7 @@ intercom ticket-type list
 | `intercom conversation snooze <id>` | Snooze conversation |
 | `intercom conversation convert <id>` | Convert conversation to ticket |
 
-`intercom conversation reply` requires exactly one of `--body <body>` or `--body-file <path>` (read as UTF-8), and supports `--type <comment|note>` and `--json <json>`.
+`intercom conversation reply` requires exactly one of `--body <body>` or `--body-file <path>` (read as UTF-8), and supports `--body-format markdown`, `--type <comment|note>`, and `--json <json>`. Omitting `--body-format` preserves the supplied body unchanged; Markdown is rendered with source HTML escaped and soft line breaks preserved as newlines (not `<br>`).
 Message type precedence: `--type` > `--json.message_type` > `comment`.
 
 ### Companies
@@ -197,7 +199,7 @@ Message type precedence: `--type` > `--json.message_type` > `comment`.
 | `intercom ticket close <id>` | Close a ticket |
 | `intercom ticket assign <id>` | Assign ticket to admin/team |
 
-`intercom ticket reply` requires exactly one of `--body <body>` or `--body-file <path>` (read as UTF-8), and supports `--type <comment|note>` and `--json <json>`.
+`intercom ticket reply` requires exactly one of `--body <body>` or `--body-file <path>` (read as UTF-8), and supports `--body-format markdown`, `--type <comment|note>`, and `--json <json>`. Omitting `--body-format` preserves the supplied body unchanged; Markdown is rendered with source HTML escaped and soft line breaks preserved as newlines (not `<br>`).
 Message type precedence: `--type` > `--json.message_type` > `comment`.
 
 ### Ticket Types
