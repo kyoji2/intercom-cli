@@ -430,6 +430,7 @@ export function registerCommands(program: Command, ctx: RegisterContext): void {
         options: [
           { flags: "--body <body>", description: "Reply message body" },
           { flags: "--body-file <path>", description: "Read reply message body from a UTF-8 file" },
+          { flags: "--body-format <format>", description: "Body format (markdown renders Markdown to HTML)" },
           { flags: "--type <type>", description: "Message type (comment, note)" },
           { flags: "--json <json>", description: "Additional reply data as JSON" },
         ],
@@ -440,6 +441,7 @@ export function registerCommands(program: Command, ctx: RegisterContext): void {
             adminId: options.admin as string,
             body: options.body as string | undefined,
             bodyFile: options.bodyFile as string | undefined,
+            bodyFormat: options.bodyFormat as string | undefined,
             messageType: options.type as string | undefined,
             json: options.json as string | undefined,
           });
@@ -849,6 +851,7 @@ export function registerCommands(program: Command, ctx: RegisterContext): void {
         options: [
           { flags: "--body <body>", description: "Reply message body" },
           { flags: "--body-file <path>", description: "Read reply message body from a UTF-8 file" },
+          { flags: "--body-format <format>", description: "Body format (markdown renders Markdown to HTML)" },
           { flags: "--type <type>", description: "Message type (comment, note)" },
           { flags: "--json <json>", description: "Additional reply data as JSON" },
         ],
@@ -859,6 +862,7 @@ export function registerCommands(program: Command, ctx: RegisterContext): void {
             adminId: options.admin as string,
             body: options.body as string | undefined,
             bodyFile: options.bodyFile as string | undefined,
+            bodyFormat: options.bodyFormat as string | undefined,
             messageType: options.type as string | undefined,
             json: options.json as string | undefined,
           });

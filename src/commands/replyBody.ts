@@ -1,10 +1,29 @@
 import { readFile } from "node:fs/promises";
+import MarkdownIt from "markdown-it";
 import { CLIError } from "../utils/index.ts";
 
 export type ReplyBodyInput = {
   body?: string;
   bodyFile?: string;
+  bodyFormat?: string;
 };
+
+const markdown = new MarkdownIt({
+  html: false,
+  breaks: false,
+});
+
+function renderReplyBody(body: string, bodyFormat?: string): string {
+  if (bodyFormat === undefined) {
+    return body;
+  }
+
+  if (bodyFormat !== "markdown") {
+    throw new CLIError(`Unsupported --body-format value: ${bodyFormat}`, 400, "Use markdown.");
+  }
+
+  return markdown.render(body);
+}
 
 export async function resolveReplyBody(input: ReplyBodyInput): Promise<string> {
   const hasBody = input.body !== undefined;
@@ -15,7 +34,7 @@ export async function resolveReplyBody(input: ReplyBodyInput): Promise<string> {
   }
 
   if (hasBody) {
-    return input.body as string;
+    return renderReplyBody(input.body as string, input.bodyFormat);
   }
 
   try {
@@ -23,7 +42,7 @@ export async function resolveReplyBody(input: ReplyBodyInput): Promise<string> {
     if (body.length === 0) {
       throw new CLIError(`Body file is empty: ${input.bodyFile}`, 400);
     }
-    return body;
+    return renderReplyBody(body, input.bodyFormat);
   } catch (error) {
     if (error instanceof CLIError) {
       throw error;

@@ -74,11 +74,12 @@ describe("CLI Integration", () => {
       expect(stdout).toContain("close");
     });
 
-    test("conversation reply --help shows body input, --type, and --json options", async () => {
+    test("conversation reply --help shows body input, format, --type, and --json options", async () => {
       const { stdout } = await cli("conversation reply --help");
 
       expect(stdout).toContain("--body");
       expect(stdout).toContain("--body-file");
+      expect(stdout).toContain("--body-format");
       expect(stdout).toContain("--type");
       expect(stdout).toContain("--json");
     });
@@ -125,11 +126,12 @@ describe("CLI Integration", () => {
       expect(stdout).toContain("get");
     });
 
-    test("ticket reply --help shows body input, --type, and --json options", async () => {
+    test("ticket reply --help shows body input, format, --type, and --json options", async () => {
       const { stdout } = await cli("ticket reply --help");
 
       expect(stdout).toContain("--body");
       expect(stdout).toContain("--body-file");
+      expect(stdout).toContain("--body-format");
       expect(stdout).toContain("--type");
       expect(stdout).toContain("--json");
     });
@@ -159,6 +161,15 @@ describe("CLI Integration", () => {
       const { exitCode } = await cli("contact get");
 
       expect(exitCode).not.toBe(0);
+    });
+
+    test("unsupported reply body format exits with a clear error", async () => {
+      const { exitCode, stderr } = await cli(
+        "conversation reply conversation-id --admin admin-id --body reply --body-format html",
+      );
+
+      expect(exitCode).not.toBe(0);
+      expect(stderr).toContain("Unsupported --body-format value: html");
     });
   });
 
@@ -206,6 +217,40 @@ describe("CLI Integration", () => {
       }
     });
 
+    test("conversation reply renders Markdown in its final dry-run payload", async () => {
+      const body = "# Status\nSoft line";
+      const proc = spawn({
+        cmd: [
+          "bun",
+          "run",
+          "src/index.ts",
+          "--dry-run",
+          "conversation",
+          "reply",
+          "conversation-id",
+          "--admin",
+          "admin-id",
+          "--body",
+          body,
+          "--body-format",
+          "markdown",
+          "--type",
+          "note",
+          "--json",
+          '{"message_type":"comment"}',
+        ],
+        env: { ...process.env, INTERCOM_ACCESS_TOKEN: "test-token" },
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+      const stdout = await new Response(proc.stdout).text();
+      const exitCode = await proc.exited;
+
+      expect(exitCode).toBe(0);
+      expect(stdout).toContain(JSON.stringify("<h1>Status</h1>\n<p>Soft line</p>\n"));
+      expect(stdout).toContain('"message_type": "note"');
+    });
+
     test("ticket reply reads a body file and displays its final payload", async () => {
       const directory = await mkdtemp(join(tmpdir(), "intercom-cli-dry-run-"));
       const bodyFile = join(directory, "reply.txt");
@@ -243,6 +288,35 @@ describe("CLI Integration", () => {
       } finally {
         await rm(directory, { recursive: true, force: true });
       }
+    });
+
+    test("ticket reply renders Markdown in its final dry-run payload", async () => {
+      const proc = spawn({
+        cmd: [
+          "bun",
+          "run",
+          "src/index.ts",
+          "--dry-run",
+          "ticket",
+          "reply",
+          "ticket-id",
+          "--admin",
+          "admin-id",
+          "--body",
+          "**Resolved**",
+          "--body-format",
+          "markdown",
+        ],
+        env: { ...process.env, INTERCOM_ACCESS_TOKEN: "test-token" },
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+      const stdout = await new Response(proc.stdout).text();
+      const exitCode = await proc.exited;
+
+      expect(exitCode).toBe(0);
+      expect(stdout).toContain("[DRY RUN] client.tickets.reply");
+      expect(stdout).toContain(JSON.stringify("<p><strong>Resolved</strong></p>\n"));
     });
   });
 
