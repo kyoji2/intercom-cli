@@ -426,11 +426,10 @@ export function registerCommands(program: Command, ctx: RegisterContext): void {
         name: "reply",
         description: "Reply to a conversation",
         args: [{ name: "<id>", description: "Conversation ID" }],
-        requiredOptions: [
-          { flags: "--admin <id>", description: "Admin ID sending the reply" },
-          { flags: "--body <body>", description: "Reply message body" },
-        ],
+        requiredOptions: [{ flags: "--admin <id>", description: "Admin ID sending the reply" }],
         options: [
+          { flags: "--body <body>", description: "Reply message body" },
+          { flags: "--body-file <path>", description: "Read reply message body from a UTF-8 file" },
           { flags: "--type <type>", description: "Message type (comment, note)" },
           { flags: "--json <json>", description: "Additional reply data as JSON" },
         ],
@@ -439,7 +438,8 @@ export function registerCommands(program: Command, ctx: RegisterContext): void {
             ...globals,
             id: String(args[0]),
             adminId: options.admin as string,
-            body: options.body as string,
+            body: options.body as string | undefined,
+            bodyFile: options.bodyFile as string | undefined,
             messageType: options.type as string | undefined,
             json: options.json as string | undefined,
           });
@@ -845,11 +845,10 @@ export function registerCommands(program: Command, ctx: RegisterContext): void {
         name: "reply",
         description: "Reply to a ticket",
         args: [{ name: "<id>", description: "Ticket ID" }],
-        requiredOptions: [
-          { flags: "--admin <id>", description: "Admin ID sending the reply" },
-          { flags: "--body <body>", description: "Reply message body" },
-        ],
+        requiredOptions: [{ flags: "--admin <id>", description: "Admin ID sending the reply" }],
         options: [
+          { flags: "--body <body>", description: "Reply message body" },
+          { flags: "--body-file <path>", description: "Read reply message body from a UTF-8 file" },
           { flags: "--type <type>", description: "Message type (comment, note)" },
           { flags: "--json <json>", description: "Additional reply data as JSON" },
         ],
@@ -858,7 +857,8 @@ export function registerCommands(program: Command, ctx: RegisterContext): void {
             ...globals,
             id: String(args[0]),
             adminId: options.admin as string,
-            body: options.body as string,
+            body: options.body as string | undefined,
+            bodyFile: options.bodyFile as string | undefined,
             messageType: options.type as string | undefined,
             json: options.json as string | undefined,
           });
