@@ -1,6 +1,7 @@
 import ora from "ora";
 import { createClient, handleIntercomError } from "../client.ts";
 import { CLIError, type GlobalOptions, getTokenAsync, output } from "../utils/index.ts";
+import { resolveReplyBody } from "./replyBody.ts";
 import { buildAdminReplyPayload } from "./replyPayload.ts";
 
 export interface ConversationListOptions extends GlobalOptions {
@@ -21,7 +22,8 @@ export interface ConversationSearchOptions extends GlobalOptions {
 export interface ConversationReplyOptions extends GlobalOptions {
   id: string;
   adminId: string;
-  body: string;
+  body?: string;
+  bodyFile?: string;
   messageType?: string;
   json?: string;
 }
@@ -202,6 +204,7 @@ export async function cmdConversationSearch(options: ConversationSearchOptions):
 }
 
 export async function cmdConversationReply(options: ConversationReplyOptions): Promise<void> {
+  const body = await resolveReplyBody({ body: options.body, bodyFile: options.bodyFile });
   const token = await requireToken(options.configDir);
   const spinner = ora("Sending reply...").start();
 
@@ -212,7 +215,7 @@ export async function cmdConversationReply(options: ConversationReplyOptions): P
       conversation_id: options.id,
       body: buildAdminReplyPayload({
         adminId: options.adminId,
-        body: options.body,
+        body,
         messageType: options.messageType,
         json: options.json,
       }),

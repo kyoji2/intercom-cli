@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { spawn } from "bun";
 
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf-8")) as {
@@ -71,9 +74,11 @@ describe("CLI Integration", () => {
       expect(stdout).toContain("close");
     });
 
-    test("conversation reply --help shows --type and --json", async () => {
+    test("conversation reply --help shows body input, --type, and --json options", async () => {
       const { stdout } = await cli("conversation reply --help");
 
+      expect(stdout).toContain("--body");
+      expect(stdout).toContain("--body-file");
       expect(stdout).toContain("--type");
       expect(stdout).toContain("--json");
     });
@@ -120,9 +125,11 @@ describe("CLI Integration", () => {
       expect(stdout).toContain("get");
     });
 
-    test("ticket reply --help shows --type and --json", async () => {
+    test("ticket reply --help shows body input, --type, and --json options", async () => {
       const { stdout } = await cli("ticket reply --help");
 
+      expect(stdout).toContain("--body");
+      expect(stdout).toContain("--body-file");
       expect(stdout).toContain("--type");
       expect(stdout).toContain("--json");
     });
@@ -160,6 +167,82 @@ describe("CLI Integration", () => {
       const { exitCode } = await cli("--dry-run schema");
 
       expect(exitCode).toBe(0);
+    });
+
+    test("conversation reply reads a body file and displays its final payload", async () => {
+      const directory = await mkdtemp(join(tmpdir(), "intercom-cli-dry-run-"));
+      const bodyFile = join(directory, "reply.txt");
+      const body = "Hello, 世界!\n\nSecond line 🎉";
+      await writeFile(bodyFile, body, "utf8");
+
+      try {
+        const proc = spawn({
+          cmd: [
+            "bun",
+            "run",
+            "src/index.ts",
+            "--dry-run",
+            "conversation",
+            "reply",
+            "conversation-id",
+            "--admin",
+            "admin-id",
+            "--body-file",
+            bodyFile,
+          ],
+          env: { ...process.env, INTERCOM_ACCESS_TOKEN: "test-token" },
+          stdout: "pipe",
+          stderr: "pipe",
+        });
+        const stdout = await new Response(proc.stdout).text();
+        const exitCode = await proc.exited;
+
+        expect(exitCode).toBe(0);
+        expect(stdout).toContain("[DRY RUN] client.conversations.reply");
+        expect(stdout).toContain(JSON.stringify(body));
+        expect(stdout).toContain('"message_type": "comment"');
+      } finally {
+        await rm(directory, { recursive: true, force: true });
+      }
+    });
+
+    test("ticket reply reads a body file and displays its final payload", async () => {
+      const directory = await mkdtemp(join(tmpdir(), "intercom-cli-dry-run-"));
+      const bodyFile = join(directory, "reply.txt");
+      const body = "Ticket reply\nwith multiple lines";
+      await writeFile(bodyFile, body, "utf8");
+
+      try {
+        const proc = spawn({
+          cmd: [
+            "bun",
+            "run",
+            "src/index.ts",
+            "--dry-run",
+            "ticket",
+            "reply",
+            "ticket-id",
+            "--admin",
+            "admin-id",
+            "--body-file",
+            bodyFile,
+            "--type",
+            "note",
+          ],
+          env: { ...process.env, INTERCOM_ACCESS_TOKEN: "test-token" },
+          stdout: "pipe",
+          stderr: "pipe",
+        });
+        const stdout = await new Response(proc.stdout).text();
+        const exitCode = await proc.exited;
+
+        expect(exitCode).toBe(0);
+        expect(stdout).toContain("[DRY RUN] client.tickets.reply");
+        expect(stdout).toContain(JSON.stringify(body));
+        expect(stdout).toContain('"message_type": "note"');
+      } finally {
+        await rm(directory, { recursive: true, force: true });
+      }
     });
   });
 

@@ -63,6 +63,7 @@ intercom conversation list
 intercom conversation search --state open
 intercom conversation get <id>
 intercom conversation reply <id> --admin <admin-id> --body "Internal triage note" --type note
+intercom conversation reply <id> --admin <admin-id> --body-file ./reply.html --type note
 intercom conversation close <id> --admin <admin-id>
 
 # Manage companies
@@ -87,6 +88,7 @@ intercom ticket create --type-id 1234 --contact-id abc123 --title "Issue"
 intercom ticket search --state open
 intercom ticket get <id>
 intercom ticket reply <id> --admin <admin-id> --body "We're on it!" --type comment
+intercom ticket reply <id> --admin <admin-id> --body-file ./reply.txt --type comment
 intercom ticket reply <id> --admin <admin-id> --body "Internal note" --json '{"message_type":"note"}'
 intercom ticket close <id> --admin <admin-id>
 
@@ -136,7 +138,7 @@ intercom ticket-type list
 | `intercom conversation snooze <id>` | Snooze conversation |
 | `intercom conversation convert <id>` | Convert conversation to ticket |
 
-`intercom conversation reply` supports `--type <comment|note>` and `--json <json>`.  
+`intercom conversation reply` requires exactly one of `--body <body>` or `--body-file <path>` (read as UTF-8), and supports `--type <comment|note>` and `--json <json>`.
 Message type precedence: `--type` > `--json.message_type` > `comment`.
 
 ### Companies
@@ -195,7 +197,7 @@ Message type precedence: `--type` > `--json.message_type` > `comment`.
 | `intercom ticket close <id>` | Close a ticket |
 | `intercom ticket assign <id>` | Assign ticket to admin/team |
 
-`intercom ticket reply` supports `--type <comment|note>` and `--json <json>`.  
+`intercom ticket reply` requires exactly one of `--body <body>` or `--body-file <path>` (read as UTF-8), and supports `--type <comment|note>` and `--json <json>`.
 Message type precedence: `--type` > `--json.message_type` > `comment`.
 
 ### Ticket Types
